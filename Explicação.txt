@@ -1,0 +1,1 @@
+Dentro da Pasta SRC ficará o projeto laravel, podendo  ser criado antes ou depois via container
