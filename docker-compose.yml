@@ -37,7 +37,6 @@ services:
       - laravel
     volumes: 
       - ./mysql:/var/lib/mysql
-    
   php:
     build: 
       context: .
@@ -82,3 +81,4 @@ services:
     entrypoint: ['php', '/var/www/html/artisan']
     networks: 
       - laravel
+    
