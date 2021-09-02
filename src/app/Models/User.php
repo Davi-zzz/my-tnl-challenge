@@ -42,6 +42,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     public function restaurants(){
-        return $this->hasOne(Restaurant::class, 'responsible_id');
+        return $this->hasMany(Restaurant::class, 'responsible_id');
     }
 }

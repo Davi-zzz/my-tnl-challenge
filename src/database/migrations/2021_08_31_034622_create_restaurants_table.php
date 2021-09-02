@@ -22,7 +22,7 @@ class CreateRestaurantsTable extends Migration
             $table->string('phone');
             $table->string('location');
             $table->string('state');
-            $table->boolean('status');
+            $table->boolean('status')->default(true);
             $table->bigInteger('responsible_id')->unsigned()->nullable();
             $table->foreign('responsible_id')->references('id')->on('users')->restrict();
             $table->timestamps();

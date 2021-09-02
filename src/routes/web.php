@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,5 +14,6 @@ use App\Models\User;
 */
 
 Route::get('/', function () {
-    return response()->json(['message'=>'is all fine here, but you shouldnt be here! check our api!']);
+    return response()->json(['message'=> 'you are not suposed to be here.']);
 });
+

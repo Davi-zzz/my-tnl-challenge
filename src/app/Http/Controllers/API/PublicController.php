@@ -48,7 +48,6 @@ class PublicController extends BaseController
             $item  == '' || $item == null ? $message = 'this restaurant does not exist' : $message = 'sucess';
             return $this->sendResponse($item, $message);
         } catch (\Exception $e) {
-            //throw $th;
             return $this->sendError($e->getMessage());
         }
     }
