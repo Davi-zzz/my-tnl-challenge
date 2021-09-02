@@ -23,7 +23,15 @@ class RestaurantFactory extends Factory
     {
         return [
             //
-            
+            'name' => $this->faker->name,
+            'cnpj' => $this->faker->cnpj,
+            'phone' => $this->faker->cellPhoneNumber,
+            'address'  => $this->faker->streetAddress,
+            'zip_code'  => $this->faker->postcode,
+            'location'  => 'BRAZIL',
+            'state' => $this->faker->state,
+            'responsible_id' => null,
+            'status' => true
         ];
     }
 }
