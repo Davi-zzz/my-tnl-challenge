@@ -15,13 +15,10 @@ class PublicController extends BaseController
      */
     public function listRestaurants()
     {
-        //
         try {
-            //code...
             $data = Restaurant::where('status', 1)->get();
             return $this->sendResponse($data);
         } catch (\Exception $e) {
-            //throw $th;
             return $this->sendError($e->getMessage());
         }
     }
@@ -33,10 +30,7 @@ class PublicController extends BaseController
      */
     public function showRestaurant($id)
     {
-        //
         try {
-            //code...
-            //using eager loader to get multiples relationship using conditionals
             $item = Restaurant::with(['menus' => function ($query){
                 $query->with(['dishes' => function ($query){
                     $query->where('status', '=', 1)->get();

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
 
 class Restaurant extends Model
 {
@@ -19,23 +19,34 @@ class Restaurant extends Model
         'zip_code',
         'location',
         'state',
-        'reponsible_id',
-        'status'
+        'created_by',
+        'status',
 
-    ]; 
+    ];
     protected $table = 'restaurants';
+
+    protected $appends = [
+        'status_desc',
+    ];
+
+    public function getStatusDescAttribute()
+    {
+        return $this->status()[$this->status];
+    }
 
     public function users()
     {
         return $this->belongsTo(User::class);
     }
-    public function menus(){
+    public function menus()
+    {
         return $this->hasMany(Menu::class, 'restaurant_id');
     }
-    public function status(){
+    public function status()
+    {
         return [
             0 => 'Desabilitado',
-            1 => 'Habilitado'
+            1 => 'Habilitado',
         ];
     }
 }

@@ -4,6 +4,7 @@
 /storage/*.key
 /vendor
 ../mysql
+../Docker2/*
 .env
 .env.backup
 .phpunit.result.cache

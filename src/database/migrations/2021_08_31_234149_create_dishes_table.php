@@ -21,7 +21,7 @@ class CreateDishesTable extends Migration
             $table->boolean('status')->default(false);
             $table->tinyInteger('category');
             $table->bigInteger('menu_id')->unsigned()->nullable();
-            $table->foreign('menu_id')->references('id')->on('menus')->onDelete('RESTRICT');
+            $table->foreign('menu_id')->references('id')->on('menus')->onDelete('CASCADE');
             $table->timestamps();
         });
     }

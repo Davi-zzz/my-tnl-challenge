@@ -17,40 +17,24 @@ class RestaurantController extends BaseController
      */
     public function index()
     {
-        //
         try {
-            //code...
-            $data = Restaurant::all();
+            $data = Restaurant::where('created_by',auth()->id())->get();
             return $this->sendResponse($data);
         } catch (\Exception $e) {
-            //throw $th;
             return $this->sendError($e);
         }
     }
 
-    // /**
-    //  * Show the form for creating a new resource.
-    //  *
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function create()
-    // {
-        //
-        
-    // }
-
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request  $requestuest
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $req)
+    public function store(Request $request)
     {
-        //
         try{
-
-            $validator = Validator::make($req->all(), [
+            $validator = Validator::make($request->all(), [
                 'name' => 'required|min:5',
                 'cnpj'=> 'required|min:18',
                 'phone'=> 'required|min:14',
@@ -58,15 +42,15 @@ class RestaurantController extends BaseController
                 'zip_code'=> 'required|min:9',
                 'location'=> 'required',
                 'state'=> 'required',
-                // 'reponsible_id' => , //TODO resolver logica mais late
             ]);
 
             if ($validator->fails()) {
                 return $this->sendError('Erro de validação', $validator->errors(), 213);
-            }
-
-            $item = Restaurant::create($req->all());
-            return $this->sendResponse($item, 'success', 201);
+            }          
+            $inputs = $request->all();
+            $inputs['created_by'] = auth()->id();
+            $item = Restaurant::create($inputs);
+            return $this->sendResponse([],'success', 201);
         }
         catch(Exception $e) {
             return $this->sendError($e, $e->getMessage(), 500);
@@ -79,54 +63,37 @@ class RestaurantController extends BaseController
      * @param  \App\Models\Restaurant  $restaurant
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $req)
-    {
-        //
-        $validator = Validator::make($req->all(),[
-            'id' => 'required'
-        ]);
-        
-        $item = Restaurant::where('id', $id)->first();
-        isset($item) ? $msg = 'sucess' && $code = 200 : $msg = 'this restaurant does not exist!' && $code = 404;
-        return $this->sendResponse($item, $msg, $code);
-
+    public function show(Request $request,$id)
+    {   
+        $item = Restaurant::findOrFail($id);
+        return $this->sendResponse($item);
     }
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Restaurant  $restaurant
-     * @return \Illuminate\Http\Response
-     */
-    // public function edit(Restaurant $restaurant)
-    // {
-        //
-    // }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request  $requestuest
      * @param  \App\Models\Restaurant  $restaurant
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $req)
-
+    public function update(Request $request,$id)
     {
-        //
-        //TODO fazer update
-        $validator = Validator::make($req->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:5',
             'cnpj'=> 'required|min:18',
             'phone'=> 'required|min:14',
-            'address'=> 'required| 10',
+            'address'=> 'required',
             'zip_code'=> 'required|min:9',
-            'location'=> 'required|min:3',
+            'location'=> 'required',
             'state'=> 'required',
-            'status' => 'required'
         ]);
+
         if ($validator->fails()) {
             return $this->sendError('Erro de validação', $validator->errors(), 213);
-        }
+        }   
+        $item = Restaurant::findOrFail($id);
+        $item->fill($request->all())->save();
+        return $this->sendResponse($item,'Item Atualizado com Sucesso');
 
     }
 
@@ -136,19 +103,18 @@ class RestaurantController extends BaseController
      * @param  \App\Models\Restaurant  $restaurant
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $req)
+    public function destroy($id)
     {
-        //
-        //TODO  fazer destroy
         try {
-            //code...
-            $id = Validator::make($req->all(), ['id' => 'required']);
-            $item = Restaurant::destroy($id);
-            isset($item) ? $msg = 'sucess' && $code = 200 : $msg = 'this restaurant does not exist!' && $code = 404;
-            return $this->sendResponse($item, $msg, $code);
+            $item = Restaurant::findOrFail($id);
+            if($item->created_by == auth()->id()){
+                $item->delete();
+                return $this->sendResponse([],'Deletado com Sucesso');
+            }
+            return $this->sendError([],'Você não é dono deste restaurante');
         } catch (\Exception $e) {
-            //throw $th;
             return $this->sendError($e, $e->getMessage(), 500);
         }
     }
+
 }

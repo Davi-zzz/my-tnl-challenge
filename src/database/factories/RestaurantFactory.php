@@ -30,7 +30,6 @@ class RestaurantFactory extends Factory
             'zip_code'  => $this->faker->postcode,
             'location'  => 'BRAZIL',
             'state' => $this->faker->state,
-            'responsible_id' => null,
             'status' => true
         ];
     }

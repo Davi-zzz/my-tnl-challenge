@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Menu;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Menu;
 
 class Dishe extends Model
 {
@@ -16,21 +16,36 @@ class Dishe extends Model
         'category',
         'menu_id',
         'type',
-        'status'
-    ]; 
+        'status',
+    ];
     protected $table = 'dishes';
 
-    public function menus()
+    protected $appends = [
+        'status_desc',
+        'type_desc',
+        'category_desc',
+    ];
+
+    public function getStatusDescAttribute()
     {
-        return $this->belongsTo(Menu::class);
+        return $this->status()[$this->status];
     }
-    public function status(){
+
+    public function status()
+    {
         return [
             0 => 'Desabilitado',
-            1 => 'Habilitado'
+            1 => 'Habilitado',
         ];
     }
-    public function type(){
+
+    public function getTypeDescAttribute()
+    {
+        return $this->type()[$this->type];
+    }
+
+    public function type()
+    {
         return [
             0 => 'Fritura',
             1 => 'Assado',
@@ -38,10 +53,17 @@ class Dishe extends Model
             3 => 'Grelhado',
             4 => 'Defumado',
             5 => 'Bebida',
-            6 => 'Caldo'
+            6 => 'Caldo',
         ];
     }
-    public function category(){
+
+    public function getCategoryDescAttribute()
+    {
+        return $this->category()[$this->category];
+    }
+
+    public function category()
+    {
         return [
             0 => 'Fast Food',
             1 => 'Caseiro',
@@ -50,8 +72,13 @@ class Dishe extends Model
             4 => 'Sanduíche',
             5 => 'Sobremesa',
             6 => 'Natural',
-            7 => 'Industrializado'
+            7 => 'Industrializado',
 
         ];
+    }
+
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class);
     }
 }
