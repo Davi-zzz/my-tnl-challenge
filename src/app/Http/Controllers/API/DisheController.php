@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController;
 use App\Models\Dishe;
+use App\Models\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +49,10 @@ class DisheController extends BaseController
             if ($validator->fails()) {
                 return $this->sendError('Erro de validação', $validator->errors(), 213);
             }
-
+            $data = Menu::with('dishes')->findOrFail($request['menu_id']);
+            if(!(count($data->dishes) < 10)) {
+                return $this->sendResponse([], "Este Menu ja atingiu o Numero maximo de Pratos!");
+            }
             $item = Dishe::create($request->all());
            
             return $this->sendResponse([], "Dishe Criado com Sucesso");
