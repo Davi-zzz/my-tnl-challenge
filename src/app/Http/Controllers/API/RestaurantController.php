@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController;
 use App\Models\Restaurant;
@@ -50,18 +50,23 @@ class RestaurantController extends BaseController
         //
         try{
 
-            $forms = Validator::make($req->all(), [
+            $validator = Validator::make($req->all(), [
                 'name' => 'required|min:5',
                 'cnpj'=> 'required|min:18',
                 'phone'=> 'required|min:14',
                 'address'=> 'required',
                 'zip_code'=> 'required|min:9',
-                'location'=> 'required|',
+                'location'=> 'required',
                 'state'=> 'required',
                 // 'reponsible_id' => , //TODO resolver logica mais late
             ]);
-            $item = Restaurant::create([$forms]);
-            return $this->sendResponse($item, 'sucess', 201);
+
+            if ($validator->fails()) {
+                return $this->sendError('Erro de validação', $validator->errors(), 213);
+            }
+
+            $item = Restaurant::create($req->all());
+            return $this->sendResponse($item, 'success', 201);
         }
         catch(Exception $e) {
             return $this->sendError($e, $e->getMessage(), 500);
@@ -103,10 +108,13 @@ class RestaurantController extends BaseController
      * @param  \App\Models\Restaurant  $restaurant
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $req)
+
     {
         //
         //TODO fazer update
+        
+
     }
 
     /**

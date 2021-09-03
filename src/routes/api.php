@@ -1,9 +1,8 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\API\PublicController;
-use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\API\RestaurantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,23 +15,18 @@ use App\Http\Controllers\RestaurantController;
 |
 */
 
-Route::get('/', function () {
-    return redirect()->route('index');
-});
+Route::get('/',[PublicController::class, 'listRestaurants']);
 
 Route::group(['prefix' => 'public'], function () {
     
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/register', [AuthController::class, 'register']);
-    Route::get('/index', [PublicController::class, 'listRestaurants'])->name('index');
+    // Route::get('/index', [PublicController::class, 'listRestaurants'])->name('index');
     Route::post('/restaurant/show', [PublicController::class, 'showRestaurant']);
     
 });
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    //protecting routes with middleware group thats use sanctum of laravel 8
-    // if (auth()->user()->tokens()) {
+Route::group(['middleware' => ['auth:sanctum'], 'prefix' => 'auth'], function () {
 
-    // }
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/restaurant/create', [RestaurantController::class, 'store']);
     
