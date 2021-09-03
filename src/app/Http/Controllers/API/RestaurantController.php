@@ -82,9 +82,10 @@ class RestaurantController extends BaseController
     public function show(Request $req)
     {
         //
-        $id = Validator::make($req->all(),[
+        $validator = Validator::make($req->all(),[
             'id' => 'required'
         ]);
+        
         $item = Restaurant::where('id', $id)->first();
         isset($item) ? $msg = 'sucess' && $code = 200 : $msg = 'this restaurant does not exist!' && $code = 404;
         return $this->sendResponse($item, $msg, $code);
@@ -113,7 +114,19 @@ class RestaurantController extends BaseController
     {
         //
         //TODO fazer update
-        
+        $validator = Validator::make($req->all(), [
+            'name' => 'required|min:5',
+            'cnpj'=> 'required|min:18',
+            'phone'=> 'required|min:14',
+            'address'=> 'required| 10',
+            'zip_code'=> 'required|min:9',
+            'location'=> 'required|min:3',
+            'state'=> 'required',
+            'status' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError('Erro de validação', $validator->errors(), 213);
+        }
 
     }
 

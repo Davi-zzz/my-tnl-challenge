@@ -22,7 +22,7 @@ Route::group(['prefix' => 'public'], function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/register', [AuthController::class, 'register']);
     // Route::get('/index', [PublicController::class, 'listRestaurants'])->name('index');
-    Route::post('/restaurant/show', [PublicController::class, 'showRestaurant']);
+    Route::get('/restaurant/{id}', [PublicController::class, 'showRestaurant']);
     
 });
 Route::group(['middleware' => ['auth:sanctum'], 'prefix' => 'auth'], function () {
