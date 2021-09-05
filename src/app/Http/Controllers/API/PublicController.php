@@ -19,6 +19,7 @@ class PublicController extends BaseController
             $data = Restaurant::where('status', 1)->get();
             return $this->sendResponse($data);
         } catch (\Exception $e) {
+
             return $this->sendError($e->getMessage());
         }
     }
@@ -31,10 +32,8 @@ class PublicController extends BaseController
     public function showRestaurant($id)
     {
         try {
-            $item = Restaurant::with(['menus' => function ($query){
-                $query->with(['dishes' => function ($query){
-                    $query->where('status', '=', 1)->get();
-                }])->where('status', '=', 1);
+            $item = Restaurant::with(['menus.dishes' => function ($query){
+                $query->where('status', 1);
             }])->find($id);
             $item  == '' || $item == null ? $message = 'this restaurant does not exist' : $message = 'sucess';
             return $this->sendResponse($item, $message);

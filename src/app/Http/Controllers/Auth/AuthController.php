@@ -26,7 +26,7 @@ class AuthController extends BaseController
             return $this->sendResponse(['user' => $item, 'token' => $token], 'sucess', 201);
         } catch (Exception $e) {
 
-            return  $this->sendError($e->getMessage());
+            return  $this->sendError($e,$e->getMessage());
         }
     }
     public function login(Request $req)
@@ -37,20 +37,17 @@ class AuthController extends BaseController
             ]);
         try {
             $user = User::where('email', $forms['email'])->first();
-            switch ($user) {
-                case isset($user):;
+                if( $user != null ){
+
                     if (Hash::check($forms['password'], $user->getAuthPassword())){
                         $token = $user->createToken('mydevicetoken')->plainTextToken;
                         return $this->sendResponse(["user"=> $user, "token" => $token]);
                     }
                     else {
-                        return $this->sendError('', 'the provided password dont match!', 401);
+                        return $this->sendError('the provided password dont match!',[], 401);
                     }
-                    break;
-                default:
-                    return $this->sendError('', 'this email dont have a account yet!', 404);
-                    break;
-            }
+                }          
+                return $this->sendError('this email dont have a account yet!', [], 404);
         } catch (Exception $e) {
             return $this->sendError($e, $e->getMessage(), 500);
         }

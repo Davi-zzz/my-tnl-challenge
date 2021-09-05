@@ -100,7 +100,6 @@ class DisheController extends BaseController
 
             $item = Dishe::findOrFail($id);
             $item->fill($request->all())->save();
-            $item->dishes()->delete();
 
             DB::commit();
             return $this->sendResponse([], "Prato Criado com Sucesso");
@@ -123,7 +122,7 @@ class DisheController extends BaseController
             $item->delete();
             return $this->sendResponse([], 'Deletado com Sucesso');
         } catch (Exception $e) {
-            return $this->sendError($e, $e->getMessage(), 500);
+            return $this->sendError($e->getMessage(),$e,500);
         }
     }
 }
