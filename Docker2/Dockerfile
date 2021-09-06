@@ -10,3 +10,4 @@ RUN chmod uga+x /usr/local/bin/install-php-extensions && sync && \
 RUN docker-php-ext-install mysqli pdo pdo_mysql exif
 
 RUN chown -R www-data:www-data  /var/www/html
+

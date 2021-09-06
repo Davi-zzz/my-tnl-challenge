@@ -1,25 +1,33 @@
+
 version: '3'
 
 networks:
   laravel:
     name: laravel
     external: true
+    driver: bridge
 
 services:
-  nginx: 
+  nginx_api: 
     image: nginx:stable-alpine
-    container_name: nginx_laravel
+    container_name: nginx_api
     ports: 
       - "8081:80"
+      - "8082:443"
+    expose: 
+      - "80"
+      - "443"
     volumes:
-      - ./src:/var/www/html
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./api:/var/www/html/api/
+      - ./web:/var/www/html/web/
+      - ./nginx/api/default.conf:/etc/nginx/conf/default.conf
+      - ./nginx/web/default.conf:/etc/nginx/default.conf
     depends_on:
-      - php
+      - php_front
+      - php_back
       - mysql
     networks:
       - laravel
-  
 
   mysql:
     image: mysql:5.7.29
@@ -39,48 +47,85 @@ services:
       - laravel
     volumes: 
       - ./mysql:/var/lib/mysql
-  php:
+
+  php_front:
     build: 
       context: .
       dockerfile: Dockerfile
-    container_name: php_laravel
+    container_name: php_front
     volumes: 
-      - ./src:/var/www/html
+      - ./web:/var/www/web
     ports: 
-      - "9004:9004"
+      - "9000:9000"
     networks: 
       - laravel
   
-  composer:
+  php_back:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: php_back
+    volumes: 
+      - ./api:/var/www/api
+    ports: 
+      - "9001:9000"
+    networks: 
+      - laravel
+  
+  composer_api:
     image: composer:latest
-    container_name: composer_laravel
+    container_name: composer_api
     volumes: 
-      - ./src:/var/www/html
-    working_dir: /var/www/html
+      - ./api:/var/www/api
+    working_dir: /var/www/api
     depends_on: 
-      - php
+      - php_back
     networks: 
       - laravel
   
-  npm: 
+  npm_api: 
     image: node:13.7
-    container_name: npm_laravel
+    container_name: npm_api
     volumes: 
-      - ./src:/var/www/html
-    working_dir: /var/www/html
+      - ./api:/var/www/api
+    working_dir: /var/www/api
     entrypoint: ['npm']
 
-  artisan:
+  artisan_api:
     build: 
       context: .
       dockerfile: Dockerfile
-    container_name: artisan_laravel
+    container_name: artisan_api
     volumes: 
-      - ./src:/var/www/html
+      - ./api:/var/www/api
     depends_on: 
       - mysql
-    working_dir: /var/www/html
-    entrypoint: ['php', '/var/www/html/artisan']
+    working_dir: /var/www/api
+    command: 'migrate:fresh --seed'
+    entrypoint: ['php', '/var/www/api/artisan']
     networks: 
       - laravel
-    
+  
+  composer_web:
+    image: composer:latest
+    container_name: composer_web
+    volumes: 
+      - ./web:/var/www/web
+    working_dir: /var/www/web
+    depends_on: 
+      - php_front
+    networks: 
+      - laravel
+
+  artisan_web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: artisan_web
+    volumes: 
+      - ./web:/var/www/web
+    working_dir: /var/www/web
+    entrypoint: ['php', '/var/www/web/artisan']
+    networks: 
+      - laravel
+
