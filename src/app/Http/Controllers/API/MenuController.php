@@ -40,28 +40,23 @@ class MenuController extends BaseController
             $validator = Validator::make($request->all(), [
                 'restaurant_id' => 'required|exists:restaurants,id',
                 'name' => 'required',
-                'dishes' => 'required|array|max:10|min:1',
-                'dishes.*.name' => 'required',
-                'dishes.*.description' => 'required',
-                'dishes.*.type' => 'required|integer',
-                'dishes.*.category' => 'required|integer',
             ]);
 
             if ($validator->fails()) {
                 return $this->sendError('Erro de validação', $validator->errors(), 213);
             }
-            DB::beginTransaction();
-
-            $item = Menu::create($request->all());
-            foreach ($request->dishes as $dish) {
-                $item->dishes()->create($dish);
+            $result = Menu::where('restaurant_id', $request->restaurant_id, function($query){
+                $query->where('status', 1)->get();
+            })->get();
+            if(count($result) > 3){
+                return $this->sendResponse([], "⚠ Este Restaurante já tem 3 menus ativos!, 
+                desative ou exclua um antes de adicionar um novo! ⚠");
             }
+            $item = Menu::create($request->all());
 
-            DB::commit();
             return $this->sendResponse([], "Menu Criado com Sucesso");
         } catch (Exception $e) {
             return $this->sendError($e->getMessage(), "Erro ao Salvar menu", 500);
-            DB::rollBack();
         }
 
     }
@@ -91,30 +86,19 @@ class MenuController extends BaseController
             $validator = Validator::make($request->all(), [
                 'restaurant_id' => 'required|exists:restaurants,id',
                 'name' => 'required',
-                'dishes' => 'required|array|max:10|min:1',
-                'dishes.*.name' => 'required',
-                'dishes.*.description' => 'required',
-                'dishes.*.type' => 'required|integer',
-                'dishes.*.category' => 'required|integer',
             ]);
 
             if ($validator->fails()) {
                 return $this->sendError('Erro de validação', $validator->errors(), 213);
             }
-            DB::beginTransaction();
+
 
             $item = Menu::findOrFail($id);
             $item->fill($request->all())->save();
-            $item->dishes()->delete();
-            foreach ($request->dishes as $dish) {
-                $item->dishes()->create($dish);
-            }
 
-            DB::commit();
-            return $this->sendResponse([], "Menu Criado com Sucesso");
+            return $this->sendResponse([], "Menu Salvo com Sucesso");
         } catch (Exception $e) {
             return $this->sendError($e->getMessage(), "Erro ao Salvar menu", 500);
-            DB::rollBack();
         }
     }
 

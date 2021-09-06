@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\DisheController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MenuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,8 +29,9 @@ Route::post('/register', [AuthController::class, 'register'])->name('sendRegiste
 
 
 Route::resource('/restaurant', RestaurantController::class);
-Route::resource('/dishe', DisheController::class)->except('store');
-
+Route::resource('/dishe', DisheController::class)->except('show');
+Route::resource('/menu', MenuController::class)->except('index','show', 'create');
+Route::get('/menu/create', [MenuController::class, 'create'])->name('menu.create');
 
 
 

@@ -18,13 +18,12 @@ class RestaurantController extends BaseController
     public function index()
     {
         try {
-            $data = Restaurant::where('created_by',auth()->id())->get();
+            $data = Restaurant::all();
             return $this->sendResponse($data);
         } catch (\Exception $e) {
             return $this->sendError($e);
         }
     }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -65,7 +64,7 @@ class RestaurantController extends BaseController
      */
     public function show(Request $request,$id)
     {   
-        $item = Restaurant::findOrFail($id);
+        $item = Restaurant::with('menus.dishes')->findOrFail($id);
         return $this->sendResponse($item);
     }
 
@@ -107,11 +106,9 @@ class RestaurantController extends BaseController
     {
         try {
             $item = Restaurant::findOrFail($id);
-            if($item->created_by == auth()->id()){
-                $item->delete();
-                return $this->sendResponse([],'Deletado com Sucesso');
-            }
-            return $this->sendError([],'Você não é dono deste restaurante');
+            $item->delete();
+            return $this->sendResponse([],'Deletado com Sucesso');
+            
         } catch (\Exception $e) {
             return $this->sendError($e, $e->getMessage(), 500);
         }

@@ -6,13 +6,12 @@
 <div class="container py-3">
     <div class="card p-3">
         <div class="row">
-            <form action="{{ route('restaurant.store') }}" method="POST">
-                @method('POST')
+            <form action="{{ route('restaurant.update', $item['id']) }}" method="POST">
+                @method('PUT')
                 @csrf
                 @include('restaurant._forms')
                 
                 <button type="submit" class="btn btn-primary"> enviar</button>
-            </form>
             </form>
         </div>
     </div>

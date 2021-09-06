@@ -102,7 +102,7 @@ class DisheController extends BaseController
             $item->fill($request->all())->save();
 
             DB::commit();
-            return $this->sendResponse([], "Prato Criado com Sucesso");
+            return $this->sendResponse([], "Prato Atualizado com Sucesso");
         } catch (Exception $e) {
             return $this->sendError($e->getMessage(), "Erro ao Salvar Prato", 500);
             DB::rollBack();

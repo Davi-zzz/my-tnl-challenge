@@ -37,9 +37,7 @@
 </div>
 @else
 <div class="form-group col-md-6">
-    {!! Form::text('menu_id', 'Menu')
-    ->readonly()
-    !!}
+    <input type="hidden" name="menu_id" value="{{$menu_id}}"/>
 </div>
 <div class="form-group col-md-6">
     {!! Form::text('name', 'Nome')->required() !!}

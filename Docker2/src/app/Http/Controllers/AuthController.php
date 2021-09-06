@@ -19,6 +19,7 @@ class AuthController extends Controller
         $error = $user['message'];
         if(!$user->failed() || $user['error'] == false){
             session()->put('token', $user->json()['data']['token']);
+            session()->put('user_id', $user->json()['data']['user']['id']);
             return redirect()->route('index');
         }
         return view('login', compact('error'))->withError("Não foi possivel logar 😢{$error}");

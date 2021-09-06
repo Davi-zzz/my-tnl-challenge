@@ -9,17 +9,12 @@
 </head>
 @extends('layouts.main')
 @section('content')
+    @include('alerts.error')
+    @include('alerts.sucess')
 
 
 
     <div class="container py-3">
-        @isset($error)
-            <span>{{$error, 'asdkasdaskdask'}}</span>
-           
-        @endisset
-        @isset($sucess)
-        <span>{{$sucess}}</span>
-        @endisset
         <div class="title h1 text-center">Restaurante {{ $item['data']['name'] }}</div>
         <!-- Card Start -->
         <div class="card">
@@ -65,30 +60,52 @@
                         </div>
                         <br>
                         @if (session()->has('token'))
-                            <a href="#" class="mt-auto btn btn-primary">Read More</a>
+                            {!! Form::open()->get()->route('restaurant.edit', [$item['data']['id']]) !!}
+                            <button type="submit" class="mt-auto btn btn-primary">Editar</button>
+                            {!! Form::close() !!}
+                            {!! Form::open()->delete()->route('restaurant.destroy', [$item['data']['id']]) !!}
+                            <button type="submit" class="mt-auto btn btn-danger">Deletar</button>
+                            {!! Form::close() !!}
+                            <form action="{{ route('menu.create') }}" method="GET">
+                                <input type="hidden" name="restaurant_id" value="{{ $item['data']['id'] }}" />
+                                <button type="submit" class="btn btn-success"> Add Menu</button>
+                            </form>
                         @endif
                     </div>
                 </div>
                 <!-- Carousel start -->
                 <div class="col-md-5">
                     <div id="CarouselTest" class="carousel slide" data-ride="carousel">
-                        <img style="display:flex; justify-content: center; align-items: center" class="d-block width=100%" src="https://picsum.photos/150?image=380" alt="">
-                        </div>
+                        <img style="display:flex; justify-content: center; align-items: center" class="d-block width=100%"
+                            src="https://picsum.photos/150?image=380" alt="">
                     </div>
                 </div>
-                <!-- End of carousel -->
             </div>
+            <!-- End of carousel -->
         </div>
-        <!-- End of card -->
+    </div>
+    <!-- End of card -->
 
     </div>
     @forelse ($item['data']['menus'] as $menu)
-    <div class="title h1 text-center">MENU {{$menu['name']}}</div>
+        <div class="title h1 text-center">MENU {{ $menu['name'] }}</div>
         <div class="container">
             <div class="card float-right">
+                <div>
+                    <form action="{{ route('dishe.create') }}" method="GET">
+                        <input type="hidden" name="menu_id" value="{{ $menu['id'] }}" />
+                        <button type="submit" class="btn btn-success"> Add Prato</button>
+                    </form>
+                    {!! Form::open()->delete()->route('menu.destroy', [$menu['id']]) !!}
+                    <button class="btn btn-danger" type="submit">Deletar Menu</button>
+                    {!! Form::close() !!}
+                    {!! Form::open()->get()->route('menu.edit', [$menu['id']]) !!}
+                    <button class="btn btn-primary" type="submit">Editar</button>
+                    {!! Form::close() !!}
+                </div>
                 <div class="row ">
                     @forelse ($menu['dishes'] as $item)
-                    
+
                         <div class="col-md-7">
                             <div class="card-block" style="border-style: solid">
                                 <ul>
@@ -99,10 +116,10 @@
                                         <p>DESCRIÇÃO: {{ $item['description'] }}
                                     </li>
                                     <li>
-                                        <p>TIPO: {{ $item['description'] }}</p>
+                                        <p>TIPO: {{ $item['type_desc'] }}</p>
                                     </li>
                                     <li>
-                                        <p>CATEGORIA: {{ $item['description'] }}</p>
+                                        <p>CATEGORIA: {{ $item['category_desc'] }}</p>
                                     </li>
                                 </ul>
                                 <div class="row">
@@ -116,23 +133,22 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <img style="display:flex; justify-content: center; align-items: center" class="d-block width=100%" src="https://picsum.photos/200?v={{$item['id']}}" alt="">
+                            <img style="display:flex; justify-content: center; align-items: center"
+                                class="d-block width=100%" src="https://picsum.photos/200?v={{ $item['id'] }}" alt="">
                         </div>
-                        @empty
+                    @empty
                         <div class="col-sm-7">
                             <span>Este Menu Não tem Pratos Ainda !</span>
-                            </div>
                         </div>
-                    @endforelse
-
-                    
                 </div>
-            </div>
-            
-            <br>
-            <br>
-            @empty
-            <h3 style="align-items: center; display: flex; justify-content: center">Este Restaurante não tem menus ainda!</h3>
+    @endforelse
+    </div>
+    </div>
+
+    <br>
+    <br>
+@empty
+    <h3 style="align-items: center; display: flex; justify-content: center">Este Restaurante não tem menus ainda!</h3>
     @endforelse
 
 @endsection

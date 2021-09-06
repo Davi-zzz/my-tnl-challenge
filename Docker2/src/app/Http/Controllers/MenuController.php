@@ -4,22 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use GuzzleHttp\Client;
 
-class DisheController extends Controller
+class MenuController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index()
     {
         //
-        $token = session()->get('token');
-        $data = Http::withHeaders(['Accept' => 'application/json', 'Authorization' => "Bearer {$token}"])
-        ->get("http://localhost:8081/api/auth/dishe?menu_id{$id}");
-        dd($data);
     }
 
     /**
@@ -30,8 +25,8 @@ class DisheController extends Controller
     public function create(Request $req)
     {
         //
-        $menu_id = $req->menu_id;
-        return view('dishes.create', compact('menu_id'));
+        $item['data']['restaurant_id'] = $req->restaurant_id;
+        return view('menu.create', compact('item'));
     }
 
     /**
@@ -45,18 +40,16 @@ class DisheController extends Controller
         //
         $token = session()->get('token');
         $result = Http::withHeaders(['Accep' => 'application/json', 'Authorization' => "Bearer {$token}"])
-        ->post('http://localhost:8081/api/auth/dishes', [
-            'menu_id' => $req->menu_id,
+        ->post('http://localhost:8081/api/auth/menu', [
+            'restaurant_id' => $req->restaurant_id,
             'name' => $req->name,
-            'description' => $req->description,
-            'type' => $req->type,
-            'category' => $req->category,
-            'status' => $req->status
+            'status'=> $req->status
         ]);
         if ($result->json()['error'] == false){
             return back()->withStatus($result->json()['message']);
         }
-        return back()->withError($result->json()['message']);
+            return redirect()->route('index')->withError($result->json()['message']);
+
     }
 
     /**
@@ -81,12 +74,11 @@ class DisheController extends Controller
         //
         $token = session()->get('token');
         $item = Http::withHeaders(['Accept' => 'application/json','Authorization' => "Bearer {$token}"])
-        ->get("http://localhost:8081/api/auth/dishes/{$id}");
-        if (!$item->failed() || $item['error'] != true) {
-            $item = $item['data'];
-            return view('dishes.edit', compact('item'));
+        ->get("http://localhost:8081/api/auth/menu/{$id}")->json();
+        if ($item['error'] != true) {
+            return view('menu.edit', compact('item'));
         }
-        return back()->withError($item->json()['message']);
+        return back()->withError($item['message']);
     }
 
     /**
@@ -99,22 +91,17 @@ class DisheController extends Controller
     public function update(Request $req, $id)
     {
         //
-
         $token = session()->get('token');
         $item = Http::withHeaders(['Accept' => 'application/json','Authorization' => "Bearer {$token}"])
-            ->put("http://localhost:8081/api/auth/dishes/{$id}", [
-                'name' => $req->name,
-                'menu_id' => $req->menu_id,
-                'description' => $req->description,
-                'type' => $req->type,
-                'category' => $req->category,
-                'status' => $req->status
-        ]);
-        if($item['error'] == false){
-
-            return redirect()->route('index')->withStatus($item['message']);
+        ->put("http://localhost:8081/api/auth/menu/{$id}",[
+            "restaurant_id" => $req->restaurant_id,
+            "name" => $req->name,
+            "status" => $req->status
+        ])->json();
+        if ($item['error'] != true) {
+            return back()->withStatus($item['message']);
         }
-            return back()->withError($item['error']);
+        return back()->withError('Erro'+json_encode($item['data']));
     }
 
     /**
@@ -127,14 +114,12 @@ class DisheController extends Controller
     {
         //
         $token = session()->get('token');
-        $link = 'http://localhost:8081';
-        $result = Http::withHeaders(['Accept' => 'application/json','Authorization' => "Bearer {$token}"])
-        ->delete("{$link}/api/auth/dishes/{$id}")->json();
-        if ((isset($result['error']) != true) || $result['message'] == 'Deletado com Sucesso') {
-            $sucess = $result['message'];
-            return back()->withStatus($sucess);
+        $result = Http::withHeaders(['Accept' => 'application/json', 'Authorization' => "Bearer {$token}"])
+        ->delete("//localhost:8081/api/auth/menu/{$id}");
+
+        if($result->json()['error'] == false){
+            return back()->withStatus($result['message']);
         }
-        $error = $result['message'];
-        return back()->withError($error);
+            return back()->withErro($result->json()['error']);
     }
 }

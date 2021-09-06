@@ -9,12 +9,13 @@
 </head>
 @extends('layouts.main')
 @section('content')
+@include('alerts.error')
+@include('alerts.sucess')
 
     <!-- Topic Cards -->
     <div id="cards_landscape_wrap-2">
         <div class="container">
             <div class="row">
-                @include('alerts.error')
                 @forelse($data['data'] as $item)
                     <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
                         <a href="{{ route('restaurant.show', ['restaurant' => (int) $item['id']]) }}">
