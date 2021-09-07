@@ -91,8 +91,17 @@ class MenuController extends BaseController
             if ($validator->fails()) {
                 return $this->sendError('Erro de validação', $validator->errors(), 213);
             }
+            if($request->status == 1){
 
-
+                $result = Menu::where('restaurant_id', $request->restaurant_id, function($query){
+                    $query->where('status', 1)->get();
+                })->get();
+    
+                if(count($result) > 3){
+                    return $this->sendResponse([], "⚠ Este Restaurante já tem 3 menus ativos!, 
+                    desative ou exclua um antes de adicionar um novo! ⚠");
+                }
+            }
             $item = Menu::findOrFail($id);
             $item->fill($request->all())->save();
 
