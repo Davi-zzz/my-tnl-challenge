@@ -96,16 +96,17 @@ class DisheController extends BaseController
             if ($validator->fails()) {
                 return $this->sendError('Erro de validação', $validator->errors(), 213);
             }
-            DB::beginTransaction();
-
+            $data = Menu::with('dishes')->findOrFail($request['menu_id']);
+            if(!(count($data->dishes) <= 10)) {
+                return $this->sendResponse([], "Este Menu ja atingiu o Numero maximo de Pratos!");
+            }
             $item = Dishe::findOrFail($id);
             $item->fill($request->all())->save();
 
-            DB::commit();
+
             return $this->sendResponse([], "Prato Atualizado com Sucesso");
         } catch (Exception $e) {
             return $this->sendError($e->getMessage(), "Erro ao Salvar Prato", 500);
-            DB::rollBack();
         }
     }
 

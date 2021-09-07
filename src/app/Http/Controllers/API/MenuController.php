@@ -48,7 +48,7 @@ class MenuController extends BaseController
             $result = Menu::where('restaurant_id', $request->restaurant_id, function($query){
                 $query->where('status', 1)->get();
             })->get();
-            if(count($result) > 3){
+            if(count($result) >= 3){
                 return $this->sendResponse([], "⚠ Este Restaurante já tem 3 menus ativos!, 
                 desative ou exclua um antes de adicionar um novo! ⚠");
             }
@@ -97,7 +97,7 @@ class MenuController extends BaseController
                     $query->where('status', 1)->get();
                 })->get();
     
-                if(count($result) > 3){
+                if(count($result) >= 3){
                     return $this->sendResponse([], "⚠ Este Restaurante já tem 3 menus ativos!, 
                     desative ou exclua um antes de adicionar um novo! ⚠");
                 }
