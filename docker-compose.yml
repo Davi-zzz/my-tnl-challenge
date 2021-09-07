@@ -57,6 +57,7 @@ services:
     volumes: 
       - ./src:/var/www/html
     working_dir: /var/www/html
+    command: 'composer install'
     depends_on: 
       - php
     networks: 
@@ -75,6 +76,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: artisan_laravel
+    command: 'key:generate'
     volumes: 
       - ./src:/var/www/html
     depends_on: 
